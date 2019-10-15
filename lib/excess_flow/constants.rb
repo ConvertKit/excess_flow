@@ -23,5 +23,5 @@ module ExcessFlow
   LOCK_PREFIX = 'excess_flow::lock::'
   MUTEX_LOCK_TIME = 1
   MUTEX_SLEEP_TIME = 1 / 100_000
-  VERSION = '1.0.0'
+  VERSION = '1.0.1'
 end

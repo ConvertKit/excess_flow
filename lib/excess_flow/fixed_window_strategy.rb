@@ -47,7 +47,7 @@ module ExcessFlow
     end
 
     def start_expiration_window
-      return if current_requests.zero?
+      return unless current_requests.zero?
 
       ExcessFlow.redis { |r| r.expire(configuration.counter_key, configuration.ttl) }
     end

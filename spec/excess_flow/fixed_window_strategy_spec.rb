@@ -22,7 +22,7 @@ RSpec.describe ExcessFlow::FixedWindowStrategy do
     ExcessFlow.redis { |r| r.expire('bar', 0) }
   end
 
-  let(:configuration) { OpenStruct.new(counter_key: 'foo', lock_key: 'bar', ttl: 1, limit: 2) }
+  let(:configuration) { OpenStruct.new(counter_key: 'foo', lock_key: 'bar', ttl: 10, limit: 2) }
 
   describe '#within_rate_limit?' do
     it 'returns true if executuion is under the limit' do
@@ -40,6 +40,12 @@ RSpec.describe ExcessFlow::FixedWindowStrategy do
 
       expect(succesful_execution_results).to eq([true, true])
       expect(result[-1]).to eq(false)
+    end
+
+    it 'sets window expiration on the first request' do
+      ExcessFlow::FixedWindowStrategy.new(configuration).within_rate_limit?
+
+      expect(ExcessFlow.redis { |r| r.ttl('foo') }).to be_between(1, 10)
     end
   end
 end
