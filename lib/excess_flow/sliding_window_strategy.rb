@@ -45,7 +45,7 @@ module ExcessFlow
         r.zadd(
           configuration.counter_key,
           current_timestamp,
-          current_timestamp
+          SecureRandom.uuid
         )
       end
     end

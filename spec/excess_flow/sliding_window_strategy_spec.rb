@@ -26,18 +26,19 @@ RSpec.describe ExcessFlow::SlidingWindowStrategy do
 
   describe '#within_rate_limit?' do
     it 'returns true if execution is under the limit' do
-      strategy = ExcessFlow::FixedWindowStrategy.new(configuration)
+      strategy = ExcessFlow::SlidingWindowStrategy.new(configuration)
 
       expect(strategy.within_rate_limit?).to eq(true)
     end
 
     it 'returns false if execution is over the limit' do
+      allow(Time).to receive(:now).and_return(42)
+
       result = 2.times.map do
-        ExcessFlow::FixedWindowStrategy.new(configuration).within_rate_limit?
+        ExcessFlow::SlidingWindowStrategy.new(configuration).within_rate_limit?
       end
 
-      expect(result[0]).to eq(true)
-      expect(result[1]).to eq(false)
+      expect(result).to eq([true, false])
     end
 
     it 'epires stale pointers in sorted set' do
@@ -51,11 +52,11 @@ RSpec.describe ExcessFlow::SlidingWindowStrategy do
     end
 
     it 'drops in current timestamp into pointers sorted set (with 1/100_000 precision)' do
-      allow(Time).to receive(:now).and_return(42)
+      allow(SecureRandom).to receive(:uuid).and_return(42)
 
       ExcessFlow::SlidingWindowStrategy.new(configuration).within_rate_limit?
 
-      expect(ExcessFlow.redis { |r| r.zrange('foo', 0, -1) }).to eq(['4200000'])
+      expect(ExcessFlow.redis { |r| r.zrange('foo', 0, -1) }).to eq(['42'])
     end
   end
 end
