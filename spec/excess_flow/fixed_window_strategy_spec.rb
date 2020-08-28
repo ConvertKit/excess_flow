@@ -47,5 +47,14 @@ RSpec.describe ExcessFlow::FixedWindowStrategy do
 
       expect(ExcessFlow.redis { |r| r.ttl('foo') }).to be_between(1, 10)
     end
+
+    it 'will not reset window expiration on subsequential requests' do
+      4.times.map do |i|
+        ExcessFlow::FixedWindowStrategy.new(configuration).within_rate_limit?
+        sleep(1)
+
+        expect(ExcessFlow.redis { |r| r.ttl('foo') } < (10 - i)).to eq(true)
+      end
+    end
   end
 end

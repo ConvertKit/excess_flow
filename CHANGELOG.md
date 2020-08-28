@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.3
+- Bumping up gems in Gemfile.lock
+- Adding test to test window expiration for `FixedWindowStrategy`
+
 ## 1.0.2
 - Fixing a bug where `SlidingWindowStrategy` allowed occasional requests slip
   through over the limit.
