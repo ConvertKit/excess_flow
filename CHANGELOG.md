@@ -1,5 +1,9 @@
 # Changelog
 
+## 1.0.4
+- When setting expiration window rely on TTL and not counts
+  [#3](https://github.com/ConvertKit/excess_flow/pull/3)
+
 ## 1.0.3
 - Bumping up gems in Gemfile.lock
 - Adding test to test window expiration for `FixedWindowStrategy`
