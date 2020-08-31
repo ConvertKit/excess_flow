@@ -46,8 +46,12 @@ module ExcessFlow
       @current_requests ||= ExcessFlow.redis { |r| r.get(configuration.counter_key) }.to_i
     end
 
+    def current_ttl
+      @current_ttl ||= ExcessFlow.redis { |r| r.ttl(configuration.counter_key) }.to_i
+    end
+
     def start_expiration_window
-      return unless current_requests.zero?
+      return unless current_ttl.negative?
 
       ExcessFlow.redis { |r| r.expire(configuration.counter_key, configuration.ttl) }
     end

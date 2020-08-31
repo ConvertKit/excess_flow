@@ -60,12 +60,16 @@ module ExcessFlow
       @current_requests ||= ExcessFlow.redis { |r| r.zcount(configuration.counter_key, '-inf', '+inf') }
     end
 
+    def current_ttl
+      @current_ttl ||= ExcessFlow.redis { |r| r.ttl(configuration.counter_key) }.to_i
+    end
+
     def current_timestamp
       @current_timestamp ||= (Time.now.to_f * 100_000).to_i
     end
 
     def start_expiration_window
-      return if current_requests.zero?
+      return if current_ttl.negative?
 
       ExcessFlow.redis { |r| r.expire(configuration.counter_key, configuration.ttl) }
     end
